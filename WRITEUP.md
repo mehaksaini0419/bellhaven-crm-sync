@@ -3,8 +3,9 @@
 **Mehak Saini**
 
 Repo: `bellhaven-crm-sync`
-Time spent: **~4 hours** (roughly 1h exploring the API and data, 1.5h building,
-1.5h reviewing output and fixing what the review exposed)
+Time spent: **~5 hours** — roughly 1.5h exploring the API and the data before
+writing anything, 1.5h building, and 2h reviewing the proposals against the CRM,
+writing tests, and fixing what both exposed.
 
 ---
 
@@ -123,6 +124,27 @@ Two things make this hold in practice:
   items forever.
 
 After the final run: **0 proposals.** The system has converged.
+
+---
+
+## Tests
+
+`test_matcher.py` — 24 regression tests, run with `python test_matcher.py`.
+
+Every test exists because something went wrong during the build, not as
+decoration. They pin down the address normalisation cases (`NW`/`Northwest`,
+`Pike`/`Pk`), both branches of the CHOW rule, survivor selection, the
+divestiture-not-duplicate call, and the no-op guard.
+
+Writing them was worth it: two failed immediately against code I had already
+run. A cluster where one account was already marked a duplicate of the other was
+being re-flagged every run, and an Inactive duplicate was being reported as
+"missing from the website" when it was simply retired. Neither was visible in
+the output — which is the argument for tests on a pipeline like this. The
+failure mode is silent, not loud.
+
+They require no credential, so a reviewer can clone the repo and run them
+immediately.
 
 ---
 
