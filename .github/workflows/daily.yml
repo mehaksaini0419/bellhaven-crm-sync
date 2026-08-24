@@ -1,0 +1,37 @@
+name: Bellhaven CRM sync
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 07:00 America/New_York
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+
+      # Restore the decision history so re-runs stay idempotent.
+      - uses: actions/cache@v4
+        with:
+          path: data/decisions.db
+          key: bellhaven-decisions-${{ github.run_id }}
+          restore-keys: bellhaven-decisions-
+
+      - name: Run tests
+        run: python test_matcher.py
+
+      - name: Build proposals (read-only, writes nothing to the CRM)
+        env:
+          BELLHAVEN_TOKEN: ${{ secrets.BELLHAVEN_TOKEN }}
+        run: python pipeline.py
+
+      - name: Publish queue for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: proposals
+          path: data/proposals.json

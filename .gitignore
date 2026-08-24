@@ -1,0 +1,7 @@
+data/
+data_accounts_snapshot.json
+__pycache__/
+*.pyc
+.venv/
+.env
+WALKTHROUGH_NOTES.md 
