@@ -8,6 +8,11 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    # Exposed at job level so the steps below can test whether a credential
+    # exists. The `secrets` context is not available inside an `if:`, but `env`
+    # is - hence the indirection.
+    env:
+      BELLHAVEN_TOKEN: ${{ secrets.BELLHAVEN_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,13 +33,11 @@ jobs:
       # Skipped rather than failed when no credential is configured, so a fork
       # or a fresh clone still gets a green run from the test suite alone.
       - name: Build proposals (read-only, writes nothing to the CRM)
-        if: ${{ secrets.BELLHAVEN_TOKEN != '' }}
-        env:
-          BELLHAVEN_TOKEN: ${{ secrets.BELLHAVEN_TOKEN }}
+        if: env.BELLHAVEN_TOKEN != ''
         run: python pipeline.py
 
       - name: Publish queue for review
-        if: ${{ secrets.BELLHAVEN_TOKEN != '' }}
+        if: env.BELLHAVEN_TOKEN != ''
         uses: actions/upload-artifact@v4
         with:
           name: proposals
