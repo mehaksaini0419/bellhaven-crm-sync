@@ -25,12 +25,16 @@ jobs:
       - name: Run tests
         run: python test_matcher.py
 
+      # Skipped rather than failed when no credential is configured, so a fork
+      # or a fresh clone still gets a green run from the test suite alone.
       - name: Build proposals (read-only, writes nothing to the CRM)
+        if: ${{ secrets.BELLHAVEN_TOKEN != '' }}
         env:
           BELLHAVEN_TOKEN: ${{ secrets.BELLHAVEN_TOKEN }}
         run: python pipeline.py
 
       - name: Publish queue for review
+        if: ${{ secrets.BELLHAVEN_TOKEN != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: proposals
