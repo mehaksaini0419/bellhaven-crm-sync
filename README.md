@@ -1,5 +1,7 @@
 # Bellhaven CRM Ownership Sync
 
+[![CI](https://github.com/mehaksaini0419/bellhaven-crm-sync/actions/workflows/daily.yml/badge.svg)](https://github.com/mehaksaini0419/bellhaven-crm-sync/actions/workflows/daily.yml)
+
 Keeps the CRM's picture of which parent company owns each Bellhaven facility
 accurate, by reconciling the public Bellhaven website against the CRM daily.
 
